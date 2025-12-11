@@ -86,12 +86,16 @@ jobs:
       - name: Build and Package
         run: |
           mvn clean package -DskipTests -U
+          echo "Built artifact: $(ls -lh target/*.jar)"
 
       - name: Publish to Anypoint Exchange
         env:
           ANYPOINT_CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           ANYPOINT_CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
         run: |
+          echo "Publishing to Exchange with version: ${{ steps.version.outputs.version }}"
+          echo "GroupId: bdc363af-79af-48f0-9e26-e6f5fd1bee9c"
+          echo "ArtifactId: dex-401-training-mule"
           mvn deploy -DskipTests \
             -DaltDeploymentRepository=anypoint-exchange-v3::default::https://maven.anypoint.mulesoft.com/api/v3/organizations/bdc363af-79af-48f0-9e26-e6f5fd1bee9c/maven
 
@@ -100,6 +104,7 @@ jobs:
           ANYPOINT_CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           ANYPOINT_CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
         run: |
+          echo "Deploying version ${{ steps.version.outputs.version }} from Exchange to CloudHub 2.0"
           mvn mule:deploy \
             -Danypoint.connectedApp.clientId=$ANYPOINT_CLIENT_ID \
             -Danypoint.connectedApp.clientSecret=$ANYPOINT_CLIENT_SECRET \
