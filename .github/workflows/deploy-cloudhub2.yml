@@ -100,6 +100,6 @@ jobs:
             -Dcloudhub2.environment=Sandbox \
             -Dcloudhub2.applicationName=dex-401-training-mule \
             -Dcloudhub2.target=Cloudhub-US-East-2 \
+            -Dcloudhub2.muleVersion=4.8.0 \
             -Dcloudhub2.replicas=1 \
-            -Dcloudhub2.vCores=0.1 \
-            -DskipTests
+            -Dcloudhub2.vCores=0.1
