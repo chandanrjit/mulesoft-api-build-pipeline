@@ -34,11 +34,11 @@ jobs:
           # Extract major.minor from version (e.g., 1.0 from 1.0.0-SNAPSHOT)
           BASE_VERSION=$(echo $CURRENT_VERSION | sed 's/-SNAPSHOT//' | cut -d'.' -f1,2)
           
-          # Get commit count since beginning
-          COMMIT_COUNT=$(git rev-list --count HEAD)
+          # Use timestamp-based version for uniqueness: major.minor.YYYYMMDDHHmmss
+          TIMESTAMP=$(date -u +%Y%m%d%H%M%S)
           
-          # Create new version: major.minor.commitCount
-          NEW_VERSION="${BASE_VERSION}.${COMMIT_COUNT}"
+          # Create new version with timestamp
+          NEW_VERSION="${BASE_VERSION}.${TIMESTAMP}"
           
           echo "Current version: $CURRENT_VERSION"
           echo "New version: $NEW_VERSION"
