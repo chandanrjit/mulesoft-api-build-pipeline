@@ -37,6 +37,13 @@
                         <connectedAppClientId>${anypoint.connectedApp.clientId}</connectedAppClientId>
                         <connectedAppClientSecret>${anypoint.connectedApp.clientSecret}</connectedAppClientSecret>
                         <connectedAppGrantType>client_credentials</connectedAppGrantType>
+                        <deploymentSettings>
+                            <http>
+                                <inbound>
+                                    <publicUrl>${cloudhub2.applicationName}.${cloudhub2.target}.cloudhub.io</publicUrl>
+                                </inbound>
+                            </http>
+                        </deploymentSettings>
                     </cloudhub2Deployment>
                 </configuration>
             </plugin>
