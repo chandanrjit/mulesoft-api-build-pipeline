@@ -92,7 +92,7 @@ jobs:
           ANYPOINT_CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           ANYPOINT_CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
         run: |
-          mvn deploy -DmuleDeploy \
+          mvn mule:deploy -DmuleDeploy \
             -Dmule.artifact=target/dex-401-training-mule-${{ steps.version.outputs.version }}-mule-application.jar \
             -Danypoint.connectedApp.clientId=$ANYPOINT_CLIENT_ID \
             -Danypoint.connectedApp.clientSecret=$ANYPOINT_CLIENT_SECRET \
