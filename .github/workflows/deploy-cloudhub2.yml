@@ -78,9 +78,14 @@ jobs:
           </settings>
           EOF
 
+      - name: Clear Maven cache for failed artifacts
+        run: |
+          # Remove cached failures for org.everit.json.schema
+          rm -rf ~/.m2/repository/com/github/everit-org.json-schema/ || true
+          
       - name: Build and Package
         run: |
-          mvn clean package -DskipTests
+          mvn clean package -DskipTests -U
 
       - name: Deploy to CloudHub 2.0 Sandbox
         env:
