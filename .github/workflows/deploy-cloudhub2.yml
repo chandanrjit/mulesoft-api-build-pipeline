@@ -89,12 +89,12 @@ jobs:
         run: |
           mvn deploy -DmuleDeploy \
             -Dmule.artifact=target/dex-401-training-mule-${{ steps.version.outputs.version }}-mule-application.jar \
-            -DconnectedApp.clientId=$ANYPOINT_CLIENT_ID \
-            -DconnectedApp.clientSecret=$ANYPOINT_CLIENT_SECRET \
-            -Dcloudhub.environment=Sandbox \
-            -Dcloudhub.applicationName=dex-401-training-mule \
-            -Dcloudhub.target=Cloudhub-US-East-2 \
-            -Dcloudhub.replicas=1 \
-            -Dcloudhub.vCores=0.1 \
-            -Dcloudhub.businessGroupId=bdc363af-79af-48f0-9e26-e6f5fd1bee9c \
+            -Danypoint.connectedApp.clientId=$ANYPOINT_CLIENT_ID \
+            -Danypoint.connectedApp.clientSecret=$ANYPOINT_CLIENT_SECRET \
+            -Danypoint.businessGroupId=bdc363af-79af-48f0-9e26-e6f5fd1bee9c \
+            -Dcloudhub2.environment=Sandbox \
+            -Dcloudhub2.applicationName=dex-401-training-mule \
+            -Dcloudhub2.target=Cloudhub-US-East-2 \
+            -Dcloudhub2.replicas=1 \
+            -Dcloudhub2.vCores=0.1 \
             -DskipTests
