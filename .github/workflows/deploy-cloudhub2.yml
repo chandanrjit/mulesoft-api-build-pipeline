@@ -87,7 +87,15 @@ jobs:
         run: |
           mvn clean package -DskipTests -U
 
-      - name: Deploy to CloudHub 2.0 Sandbox
+      - name: Publish to Anypoint Exchange
+        env:
+          ANYPOINT_CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
+          ANYPOINT_CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
+        run: |
+          mvn deploy -DskipTests \
+            -DaltDeploymentRepository=anypoint-exchange-v3::default::https://maven.anypoint.mulesoft.com/api/v3/organizations/bdc363af-79af-48f0-9e26-e6f5fd1bee9c/maven
+
+      - name: Deploy to CloudHub 2.0 Sandbox from Exchange
         env:
           ANYPOINT_CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           ANYPOINT_CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
