@@ -1,0 +1,100 @@
+name: Deploy to CloudHub 2.0
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  MAVEN_OPTS: '-Xmx3072m'
+  JAVA_VERSION: '17'
+  MULE_VERSION: '4.10.0'
+
+jobs:
+  deploy-sandbox:
+    name: Deploy to Sandbox
+    runs-on: ubuntu-latest
+    environment: 
+      name: sandbox
+      url: https://dex-401-training-mule.us-e2.cloudhub.io
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Auto-increment version
+        id: version
+        run: |
+          # Get current version from pom.xml
+          CURRENT_VERSION=$(grep -m 1 '<version>' pom.xml | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
+          
+          # Extract major.minor from version (e.g., 1.0 from 1.0.0-SNAPSHOT)
+          BASE_VERSION=$(echo $CURRENT_VERSION | sed 's/-SNAPSHOT//' | cut -d'.' -f1,2)
+          
+          # Get commit count since beginning
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          
+          # Create new version: major.minor.commitCount
+          NEW_VERSION="${BASE_VERSION}.${COMMIT_COUNT}"
+          
+          echo "Current version: $CURRENT_VERSION"
+          echo "New version: $NEW_VERSION"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          
+          # Update pom.xml
+          sed -i.bak "s|<version>${CURRENT_VERSION}</version>|<version>${NEW_VERSION}</version>|" pom.xml
+          rm pom.xml.bak || true
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Configure Maven settings
+        env:
+          ANYPOINT_CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
+          ANYPOINT_CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<EOF
+          <settings>
+            <servers>
+              <server>
+                <id>anypoint-exchange-v3</id>
+                <username>~~~Client~~~</username>
+                <password>$ANYPOINT_CLIENT_ID~?~$ANYPOINT_CLIENT_SECRET</password>
+              </server>
+              <server>
+                <id>mulesoft-releases</id>
+                <username>~~~Client~~~</username>
+                <password>$ANYPOINT_CLIENT_ID~?~$ANYPOINT_CLIENT_SECRET</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
+      - name: Build and Package
+        run: |
+          mvn clean package -DskipTests
+
+      - name: Deploy to CloudHub 2.0 Sandbox
+        env:
+          ANYPOINT_CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
+          ANYPOINT_CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
+        run: |
+          mvn deploy -DmuleDeploy \
+            -Dmule.artifact=target/dex-401-training-mule-${{ steps.version.outputs.version }}-mule-application.jar \
+            -DconnectedApp.clientId=$ANYPOINT_CLIENT_ID \
+            -DconnectedApp.clientSecret=$ANYPOINT_CLIENT_SECRET \
+            -Dcloudhub.environment=Sandbox \
+            -Dcloudhub.applicationName=dex-401-training-mule \
+            -Dcloudhub.target=Cloudhub-US-East-2 \
+            -Dcloudhub.replicas=1 \
+            -Dcloudhub.vCores=0.1 \
+            -Dcloudhub.businessGroupId=bdc363af-79af-48f0-9e26-e6f5fd1bee9c \
+            -DskipTests
