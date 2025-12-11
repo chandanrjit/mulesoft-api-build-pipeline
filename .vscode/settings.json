@@ -1,0 +1,25 @@
+{
+    "files.exclude": {
+        "**/.git": false,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/flutter/ephemeral": true,
+        "**/Flutter/ephemeral": true,
+        "**/.symlinks": true,
+        "**/.plugin_symlinks": true,
+        "**/.apivcs": false,
+        "**/.designer.json": false,
+        "**/.exchange.xml": false,
+        "**/.exchange_modules_tmp": false,
+        "**/.gitignore": false,
+        "**/.mvn": false,
+        "**/.settings": false,
+        "**/.tmp": false,
+        "**/.vscode": false,
+        "target": true,
+        ".mule": true
+    },
+    "java.compile.nullAnalysis.mode": "automatic"
+}
