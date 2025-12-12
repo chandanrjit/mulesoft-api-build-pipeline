@@ -34,8 +34,8 @@ jobs:
           # Extract major.minor from version (e.g., 1.0 from 1.0.0-SNAPSHOT)
           BASE_VERSION=$(echo $CURRENT_VERSION | sed 's/-SNAPSHOT//' | cut -d'.' -f1,2)
           
-          # Use GitHub run number for unique incrementing version
-          BUILD_NUMBER=${{ github.run_number }}
+          # Use GitHub run number + offset to skip past deleted versions
+          BUILD_NUMBER=$(( ${{ github.run_number }} + 15 ))
           
           # Create new version: major.minor.buildNumber
           NEW_VERSION="${BASE_VERSION}.${BUILD_NUMBER}"
